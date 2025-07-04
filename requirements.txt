@@ -1,0 +1,7 @@
+pymongo
+insightface
+numpy
+faiss-cpu
+opencv-python-headless
+Pillow
+streamlit
