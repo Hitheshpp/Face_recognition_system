@@ -7,4 +7,3 @@ Pillow
 streamlit
 streamlit_webrtc
 onnxruntime
-python==3.10
