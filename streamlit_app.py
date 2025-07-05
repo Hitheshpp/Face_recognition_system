@@ -1,11 +1,18 @@
 # streamlit_app.py
 
 import streamlit as st
-from streamlit_webrtc import webrtc_streamer, WebRtcMode
-
+from streamlit_webrtc import RTCConfiguration, WebRtcMode
 from webcam_enroll import process_and_enroll
 from processors import EnrollProcessor, RecognitionProcessor
 from face_utils import delete_enrolled_face
+
+RTC_CONFIGURATION = RTCConfiguration(
+    {
+        "iceServers": [
+            {"urls": ["stun:stun.l.google.com:19302"]},
+        ]
+    }
+)
 
 # Page configuration
 st.set_page_config(page_title="Face Recognition System")
@@ -70,6 +77,7 @@ if st.session_state.get("camera_started") and st.session_state.get("enroll_activ
     ctx = webrtc_streamer(
         key="enroll_stream",
         mode=WebRtcMode.SENDRECV,
+        rtc_configuration=RTC_CONFIGURATION,
         video_processor_factory=EnrollProcessor,
         media_stream_constraints={"video": True, "audio": False},
         async_processing=True,
@@ -101,6 +109,7 @@ if st.session_state.recognition_started:
     webrtc_streamer(
         key="recognition_stream",
         mode=WebRtcMode.SENDRECV,
+        rtc_configuration=RTC_CONFIGURATION,
         video_processor_factory=RecognitionProcessor,
         media_stream_constraints={"video": True, "audio": False},
         async_processing=True,
