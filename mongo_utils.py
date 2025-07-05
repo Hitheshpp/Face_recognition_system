@@ -4,7 +4,7 @@ import streamlit as st
 import datetime
 import os
 
-mongo_uri = st.secrets["MONGODB_URI"]
+mongo_uri = st.secrets["mongodb"]["client"]
 client = MongoClient(mongo_uri)
 db = client["face_recognition"]
 fs = gridfs.GridFS(db, collection="faiss_data")
