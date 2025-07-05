@@ -6,3 +6,4 @@ opencv-python-headless
 Pillow
 streamlit
 streamlit_webrtc
+onnxruntime
