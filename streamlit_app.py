@@ -1,7 +1,7 @@
 # streamlit_app.py
 
 import streamlit as st
-from streamlit_webrtc import RTCConfiguration, WebRtcMode
+from streamlit_webrtc import RTCConfiguration, WebRtcMode, webrtc_streamer
 from webcam_enroll import process_and_enroll
 from processors import EnrollProcessor, RecognitionProcessor
 from face_utils import delete_enrolled_face
