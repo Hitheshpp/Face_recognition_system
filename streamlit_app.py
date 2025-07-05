@@ -9,7 +9,7 @@ from face_utils import delete_enrolled_face
 RTC_CONFIGURATION = RTCConfiguration(
     {
         "iceServers": [
-            {"urls": ["stun:stun.l.google.com:19302"]},
+            {"urls": ["stun:stun.l.google.com:19302", "stun:global.stun.twilio.com:3478"]}
         ]
     }
 )
