@@ -52,28 +52,46 @@ def recognize_face_from_frame(frame):
         list: List of tuples (bounding_box, name, distance).
     """
     global index, metadata, last_index_mtime, last_meta_mtime
-    model = get_face_model()
+
+    # Lazy-load the model (only once)
+    try:
+        model = get_face_model()
+    except Exception as e:
+        print(f"[ERROR] Could not load face model: {e}")
+        return []
+
+    # Return empty if files missing
     if not os.path.exists(INDEX_PATH) or not os.path.exists(META_PATH):
         return []
 
-    # Reload index if modified or not loaded
+    # Reload index + metadata if updated
     current_index_mtime = os.path.getmtime(INDEX_PATH)
     current_meta_mtime = os.path.getmtime(META_PATH)
 
-    if (index is None or metadata is None or
+    if (
+        index is None or metadata is None or
         last_index_mtime != current_index_mtime or
-        last_meta_mtime != current_meta_mtime):
-
+        last_meta_mtime != current_meta_mtime
+    ):
         download_file_from_gridfs("index.faiss", INDEX_PATH)
         download_file_from_gridfs("metadata.pkl", META_PATH)
         index, metadata = reload_index_and_metadata()
         last_index_mtime = current_index_mtime
         last_meta_mtime = current_meta_mtime
 
-    faces = model.get(frame)
+    # ✅ Resize frame to save memory and speed up detection
+    try:
+        frame_resized = cv2.resize(frame, (640, 480))
+        faces = model.get(frame_resized)
+    except Exception as e:
+        print(f"[ERROR] Face detection failed: {e}")
+        return []
+
     results = []
 
     for face in faces:
+        if face.embedding is None:
+            continue
         emb = face.embedding / np.linalg.norm(face.embedding)
         distances, indices = index.search(np.expand_dims(emb, axis=0), k=1)
         dist = distances[0][0]
@@ -82,7 +100,6 @@ def recognize_face_from_frame(frame):
         results.append((face.bbox, name, dist))
 
     return results
-
 
 def delete_enrolled_face(name_to_delete):
     """
