@@ -13,7 +13,7 @@ def get_face_model():
         with _model_lock:
             if _model_instance is None:  # Double-checked locking
                 print("[INFO] Loading InsightFace model...")
-                _model_instance = FaceAnalysis(name='buffalo_l', providers=['CPUExecutionProvider'])
+                _model_instance = FaceAnalysis(name='buffalo_l', providers=['CPUExecutionProvider'],allowed_modules=["detection", "recognition"])
                 _model_instance.prepare(ctx_id=0)
                 print("[INFO] InsightFace model loaded.")
     
