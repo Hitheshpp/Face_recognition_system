@@ -42,6 +42,10 @@ class RecognitionProcessor(VideoProcessorBase):
     """
     A video processor that performs real-time face recognition on webcam frames.
     """
+
+    def __init__(self, model):
+        self.model = model
+
     def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
         """
         Detects and identifies faces in the frame.
@@ -53,7 +57,9 @@ class RecognitionProcessor(VideoProcessorBase):
             av.VideoFrame: Annotated frame with bounding boxes and labels
         """
         img = frame.to_ndarray(format="bgr24")
-        results = recognize_face_from_frame(img)
+
+        # Pass the model to your recognition function
+        results = recognize_face_from_frame(img, self.model)
 
         for (bbox, name, dist) in results:
             x1, y1, x2, y2 = map(int, bbox)
@@ -65,3 +71,4 @@ class RecognitionProcessor(VideoProcessorBase):
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, color, 2)
 
         return av.VideoFrame.from_ndarray(img, format="bgr24")
+
