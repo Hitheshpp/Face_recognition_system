@@ -42,45 +42,41 @@ def reload_index_and_metadata():
         return None, None
 
 
-def recognize_face_from_frame(frame):
+def recognize_face_from_frame(frame, model):
     """
     Recognizes faces in a given frame using FAISS index and metadata.
 
     Args:
         frame (np.ndarray): Frame from webcam.
+        model: The InsightFace model instance passed from the outside.
 
     Returns:
         list: List of tuples (bounding_box, name, distance).
     """
     global index, metadata, last_index_mtime, last_meta_mtime
 
-    # Lazy-load the model (only once)
-    try:
-        model = get_face_model()
-    except Exception as e:
-        print(f"[ERROR] Could not load face model: {e}")
-        return []
+    # ✅ Skip loading the model here — it's now passed as a parameter
 
     # Return empty if files missing
     if not os.path.exists(INDEX_PATH) or not os.path.exists(META_PATH):
         return []
 
+    # ✅ Make sure files are up to date from GridFS
+    download_file_from_gridfs("index.faiss", INDEX_PATH)
+    download_file_from_gridfs("metadata.pkl", META_PATH)
 
-        download_file_from_gridfs("index.faiss", INDEX_PATH)
-        download_file_from_gridfs("metadata.pkl", META_PATH)
+    # Reload index + metadata if updated
+    current_index_mtime = os.path.getmtime(INDEX_PATH)
+    current_meta_mtime = os.path.getmtime(META_PATH)
 
-        # Reload index + metadata if updated
-        current_index_mtime = os.path.getmtime(INDEX_PATH)
-        current_meta_mtime = os.path.getmtime(META_PATH)
-        
-        if (index is None or metadata is None or
-            last_index_mtime != current_index_mtime or
-            last_meta_mtime != current_meta_mtime):
-            index, metadata = reload_index_and_metadata()
-            last_index_mtime = current_index_mtime
-            last_meta_mtime = current_meta_mtime
+    if (index is None or metadata is None or
+        last_index_mtime != current_index_mtime or
+        last_meta_mtime != current_meta_mtime):
+        index, metadata = reload_index_and_metadata()
+        last_index_mtime = current_index_mtime
+        last_meta_mtime = current_meta_mtime
 
-    # ✅ Resize frame to save memory and speed up detection
+    # Resize frame to speed up detection
     try:
         frame_resized = cv2.resize(frame, (640, 480))
         faces = model.get(frame_resized)
@@ -101,6 +97,7 @@ def recognize_face_from_frame(frame):
         results.append((face.bbox, name, dist))
 
     return results
+
 
 def delete_enrolled_face(name_to_delete):
     """
