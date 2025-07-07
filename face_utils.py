@@ -9,7 +9,7 @@ from mongo_utils import upload_file_to_gridfs, download_file_from_gridfs
 
 # Initialize InsightFace model (ArcFace)
 #model = insightface.app.FaceAnalysis(name="buffalo_l", providers=['CPUExecutionProvider'])
-model = get_face_model()
+#model = get_face_model()
 model.prepare(ctx_id=0)
 
 # Global variables for index and metadata
@@ -52,7 +52,7 @@ def recognize_face_from_frame(frame):
         list: List of tuples (bounding_box, name, distance).
     """
     global index, metadata, last_index_mtime, last_meta_mtime
-
+    model = get_face_model()
     if not os.path.exists(INDEX_PATH) or not os.path.exists(META_PATH):
         return []
 
