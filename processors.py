@@ -44,6 +44,7 @@ class RecognitionProcessor(VideoProcessorBase):
     """
 
     def __init__(self, model):
+        print("RecognitionProcessor __init__ called")
         self.model = model
 
     def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
