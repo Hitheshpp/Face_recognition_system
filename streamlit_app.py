@@ -100,9 +100,7 @@ def main():
             rtc_configuration=RTC_CONFIGURATION,
             video_processor_factory=enroll_processor_factory,
             media_stream_constraints={"video": True, "audio": False},
-            async_processing=True,
-            desired_playing_fps=10,
-            sendback_audio=False
+            async_processing=True
         )
 
         if ctx.video_processor:
@@ -137,8 +135,6 @@ def main():
             video_processor_factory=recognition_processor_factory,
             media_stream_constraints={"video": True, "audio": False},
             async_processing=True,
-            desired_playing_fps=10,
-            sendback_audio=False
         )
 
     # Spacer
