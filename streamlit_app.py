@@ -7,7 +7,8 @@ from face_utils import delete_enrolled_face
 from processors import EnrollProcessor, RecognitionProcessor
 from face_model import get_face_model
 from insightface.app import FaceAnalysis
-
+import os
+os.environ["INSIGHTFACE_CACHE"] = "/tmp/insightface_cache"
 # --------- Cache the model so it loads only once ---------
 # @st.cache_resource
 # def load_model():
@@ -100,6 +101,8 @@ def main():
             video_processor_factory=enroll_processor_factory,
             media_stream_constraints={"video": True, "audio": False},
             async_processing=True,
+            desired_playing_fps=10,
+            sendback_audio=False
         )
 
         if ctx.video_processor:
@@ -134,6 +137,8 @@ def main():
             video_processor_factory=recognition_processor_factory,
             media_stream_constraints={"video": True, "audio": False},
             async_processing=True,
+            desired_playing_fps=10,
+            sendback_audio=False
         )
 
     # Spacer
