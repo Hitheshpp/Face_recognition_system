@@ -5,15 +5,15 @@ from streamlit_webrtc import RTCConfiguration, WebRtcMode, webrtc_streamer
 from webcam_enroll import process_and_enroll
 from face_utils import delete_enrolled_face
 from processors import EnrollProcessor, RecognitionProcessor
-
+from face_model import get_face_model
 from insightface.app import FaceAnalysis
 
 # --------- Cache the model so it loads only once ---------
-@st.cache_resource
-def load_model():
-    model = FaceAnalysis(name='buffalo_l', providers=['CPUExecutionProvider'])
-    model.prepare(ctx_id=0)
-    return model
+# @st.cache_resource
+# def load_model():
+#     model = FaceAnalysis(name='buffalo_l', providers=['CPUExecutionProvider'])
+#     model.prepare(ctx_id=0)
+#     return model
 
 def main():
     RTC_CONFIGURATION = RTCConfiguration(
@@ -34,7 +34,7 @@ def main():
     st.title("🧠 Face Recognition System")
 
     # ---------- Load Face Model ----------
-    model = load_model()
+    model = get_face_model()
 
     # ---------- Session State Initialization ----------
     for key in ['captured', 'camera_started', 'recognition_started', 'frame', 'enroll_active', 'recognize_active', 'name']:
