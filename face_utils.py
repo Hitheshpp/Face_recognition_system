@@ -3,7 +3,6 @@ import pickle
 import numpy as np
 import faiss
 import insightface
-
 from webcam_enroll import INDEX_PATH, META_PATH
 from mongo_utils import upload_file_to_gridfs, download_file_from_gridfs
 

@@ -1,11 +1,12 @@
 from pymongo import MongoClient
 import gridfs
 import streamlit as st
-import datetime
 import os
 
-mongo_uri = st.secrets["MONGODB_URI"]
-client = MongoClient(mongo_uri)
+# #mongo_uri = st.secrets["MONGODB_URI"]
+# mongo_uri = os.getenv("MONGODB_URI")
+# client = MongoClient(mongo_uri)
+client = MongoClient("mongodb+srv://hidheshp2:KMAHjLb0Uk82mTrL@cluster0.flfg6iv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 db = client["face_recognition"]
 fs = gridfs.GridFS(db, collection="faiss_data")
 
