@@ -1,4 +1,5 @@
 import os
+import cv2
 import pickle
 import numpy as np
 import faiss
@@ -10,7 +11,7 @@ from mongo_utils import upload_file_to_gridfs, download_file_from_gridfs
 # Initialize InsightFace model (ArcFace)
 #model = insightface.app.FaceAnalysis(name="buffalo_l", providers=['CPUExecutionProvider'])
 #model = get_face_model()
-model.prepare(ctx_id=0)
+#model.prepare(ctx_id=0)
 
 # Global variables for index and metadata
 index = None
@@ -64,20 +65,20 @@ def recognize_face_from_frame(frame):
     if not os.path.exists(INDEX_PATH) or not os.path.exists(META_PATH):
         return []
 
-    # Reload index + metadata if updated
-    current_index_mtime = os.path.getmtime(INDEX_PATH)
-    current_meta_mtime = os.path.getmtime(META_PATH)
 
-    if (
-        index is None or metadata is None or
-        last_index_mtime != current_index_mtime or
-        last_meta_mtime != current_meta_mtime
-    ):
         download_file_from_gridfs("index.faiss", INDEX_PATH)
         download_file_from_gridfs("metadata.pkl", META_PATH)
-        index, metadata = reload_index_and_metadata()
-        last_index_mtime = current_index_mtime
-        last_meta_mtime = current_meta_mtime
+
+        # Reload index + metadata if updated
+        current_index_mtime = os.path.getmtime(INDEX_PATH)
+        current_meta_mtime = os.path.getmtime(META_PATH)
+        
+        if (index is None or metadata is None or
+            last_index_mtime != current_index_mtime or
+            last_meta_mtime != current_meta_mtime):
+            index, metadata = reload_index_and_metadata()
+            last_index_mtime = current_index_mtime
+            last_meta_mtime = current_meta_mtime
 
     # ✅ Resize frame to save memory and speed up detection
     try:
